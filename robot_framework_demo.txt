@@ -1,0 +1,343 @@
+1. Mi az a Robot Framework:
+https://robotframework.org/
+
+A Robot Framework egy általános nyílt forráskódú automatizálási keretrendszer. Használható teszt-automatizálásra és robotizált folyamatautomatizálásra (RPA).
+
+A Robot Framework nyílt és bővíthető. A Robot Framework gyakorlatilag bármilyen más eszközzel integrálható, így nagy teljesítményű és rugalmas automatizálási megoldások hozhatók létre. A Robot Framework licencköltségek nélkül, ingyenesen használható.
+
+A Robot Framework egyszerű szintaxissal rendelkezik, amely ember által olvasható kulcsszavakat használ. Képességei Python, Java vagy számos más programozási nyelven implementált könyvtárakkal bővíthetők.
+
+2. Szükséges programok telepítése, fejlesztői környezet létrehozása:
+https://github.com/robotframework/robotframework/blob/master/INSTALL.rst
+- python install:
+    Letöltés, telepítés
+    https://www.python.org/downloads/
+
+    Környezeti változók beállítása pl.:
+        Python:
+            C:\Users\CsoszB\AppData\Local\Programs\Python\Python312\
+        Pip:
+            C:\Users\CsoszB\AppData\Local\Programs\Python\Python312\Scripts\
+    
+    Verzió check terminálban:
+        python --version
+        pip -V vagy pip --version
+
+- Robot Framework pip install
+    Pip install terminálba:
+        pip install robotframework
+    
+    Verzió check terminálban:
+        robot --version
+
+- SeleniumLibrary (web testing library) for Robot Framework and Browser Drivers:
+    https://robotframework.org/SeleniumLibrary/
+    Pip install terminálba:
+        pip install --upgrade robotframework-seleniumlibrary
+
+- Git install:
+    https://git-scm.com/download/win
+
+    Verzió check terminálban:
+        git -v vagy git --version
+
+- Visual Studio Code install
+    https://code.visualstudio.com/
+
+- Robot Code extension for Visual Studio Code:
+    https://docs.robotframework.org/docs/getting_started/ide
+
+3. Git init
+- Git init
+    Hozzunk létre egy mappát valahol a fájlrendszeren (pl.: C:\projects\pte_rf_demo )
+    Mappán belül, jobb klikk -> Git Bash: git init
+
+- birkapásztorban rejtett fájlok megjelenítése és fájlkiterjesztések beállítása
+
+- .gitignore fájl létrehozása
+    minta: https://github.com/robotframework/robotframework/blob/master/.gitignore
+
+    EGÉSZÍTSD KI results/ mappával (!!!)
+
+- README.md file:git
+    minta: https://raw.githubusercontent.com/robotframework/robotframework/master/README.rst
+
+- GIT user és mail config
+    git config --global user.email "csosz.bence@test-it.hu"
+    git config --global user.name "Bence Csosz"
+
+4. Git add
+    Git Bashban:
+        git status  (lássuk mi változott)
+        git add .   (változások hozzáadása)
+        git commit -m "initial commit" (commit)
+        git checkout -b dev (dev ág lérehozása)
+
+5. Első teszt robot fájl:
+--------------- first_test.robot ---------------
+*** Settings ***
+Documentation    Simple test script
+Library    SeleniumLibrary
+
+*** Variables ***
+${BROWSER}    Chrome
+${URL}    https://www.google.com
+${EXPECTED_TITLE}    Google
+
+
+*** Test Cases ***
+Open Google And Check The title
+    Open Browser    ${URL}    ${BROWSER}
+    Title Should Be    ${EXPECTED_TITLE}
+    [Teardown]    Close Browser
+--------------- # ---------------
+5.1 Chrome driver, ha szükséges:
+    https://chromedriver.chromium.org/downloads
+
+    letölteni a megfelelő verziót, kitömöríteni és elhelyezni a fájlrendszeren pl.: C:\Users\CsoszB\AppData\Local\Programs\
+    https://googlechromelabs.github.io/chrome-for-testing/
+    
+    + path-ot beállítani pl.: C:\Users\CsoszB\AppData\Local\Programs\chromedriver-win64\
+
+    Terminálba verzió check:
+        chromedriver --version
+
+6. Robot Framework ajánlott projekt struktúra létrehozása
+https://docs.robotframework.org/docs/examples/project_structure
+--------------- Simple Project with tests/ and resources/ folders ---------------
+my_project
+├── tests
+│   ├── suiteA.robot
+│   ├── suiteB.robot
+│   ├── ...
+│   
+├── resources
+│   ├── common.resource
+│   ├── some_other.resource
+│   ├── custom_library.py
+│   ├── variables.py
+│   ├── ...
+│
+├── .gitlab-ci.yml
+├── .gitignore
+├── README.md
+├── requirements.txt
+--------------- # ---------------
+- tests mappa létrehozása
+- resources mappa létrehozása
+
+7. Pozitív és negatív login tesztek:
+--------------- Testing login functionality of SwagLabs ---------------
+*** Settings ***
+Documentation    Testing login functionality of SwagLabs
+Library    SeleniumLibrary
+
+*** Variables ***
+${BROWSER}    Chrome
+${URL}    https://www.saucedemo.com/
+${VALID_USERNAME}    standard_user
+${VALID_PASSWORD}    secret_sauce
+${INVALID_PASSWORD}    12345
+${USERNAME_XPATH}    //input[@id='user-name']
+${PASSWORD_XPATH}    //input[@id='password']
+${LOGIN_BUTTON_XPATH}    //input[@id='login-button']
+${SUCCESS_INDICATOR_XPATH}    //div[@id='shopping_cart_container']/a[1]
+
+*** Keywords ***
+Open Browser To Login Page
+    Open Browser    ${URL}    ${BROWSER}
+    Maximize Browser Window
+
+Input Username
+    [Arguments]    ${username}
+    Input Text    ${USERNAME_XPATH}    ${username}
+
+Input Password
+    [Arguments]    ${password}
+    Input Text    ${PASSWORD_XPATH}    ${password}
+
+Submit Credentials
+    Click Element    ${LOGIN_BUTTON_XPATH}
+
+*** Test Cases ***
+Positive Login Test
+    Open Browser To Login Page
+    Input Username    ${VALID_USERNAME}
+    Input Password    ${VALID_PASSWORD}
+    Submit Credentials
+    Page Should Contain Element    ${SUCCESS_INDICATOR_XPATH}
+    [Teardown]    Close Browser
+
+Negative Login Test
+    Open Browser To Login Page
+    Input Username    ${VALID_USERNAME}
+    Input Password    ${INVALID_PASSWORD}
+    Submit Credentials
+    Page Should Not Contain Element    ${SUCCESS_INDICATOR_XPATH}
+    [Teardown]    Close Browser
+--------------- # ---------------
+
+8. Git add
+    Git Bashban:
+        git status  (lássuk mi változott)
+        git add .   (változások hozzáadása)
+        git commit -m "add login tests" (commit)
+
+
+9. Lépjünk be és tegyük a kosárba a hátizsákot és a dzsekit és checkoutoljunk teszt
+
+- tegyük ki a változókat egy külön fájlba és bővítsük ki a szükséges változókkal -> resources mappában -> variables.robot:
+--------------- resources/variables.robot ---------------
+*** Variables ***
+${BROWSER}    Chrome
+${URL}    https://www.saucedemo.com/
+${VALID_USERNAME}    standard_user
+${VALID_PASSWORD}    secret_sauce
+${INVALID_PASSWORD}    12345
+${USERNAME_XPATH}    //input[@id='user-name']
+${PASSWORD_XPATH}    //input[@id='password']
+${LOGIN_BUTTON_XPATH}    //input[@id='login-button']
+${SUCCESS_INDICATOR_XPATH}    //div[@id='shopping_cart_container']/a[1]
+
+${ADD_BACKPACK_BUTTON_XPATH}    //button[@id='add-to-cart-sauce-labs-backpack']
+${REMOVE_BACKPACK_BUTTON_XPATH}    //button[@id='remove-sauce-labs-backpack']
+${ADD_JACKET BUTTON_XPATH}    //button[@id='add-to-cart-sauce-labs-fleece-jacket']
+${REMOVE_JACKET_BUTTON_XPATH}    //button[@id='remove-sauce-labs-fleece-jacket']
+${SHOPPING_CART_LINK}    css=.shopping_cart_link
+${TITLE_ELEMENT_XPATH}    //span[@class='title']
+--------------- # ---------------
+
+- módosítsuk a login_test.robot fájl, vegyük ki belőle a változókat és hivatkozzuk be Resource-ként
+
+- készítsünk egy "add_items_to_cart_and_checkout.robot"-ot és első lépésben írjuk meg a szükséges kulcsszavakat és egy tesztet:
+(hasznosítsd újra az elemeket a login_test.robot-ból)
+--------------- add_items_to_cart_and_checkout.robot ---------------
+*** Settings ***
+Documentation    Test for adding items to the shopping cart and checkout on SwagLabs
+Library    SeleniumLibrary
+Resource    variables.robot
+
+*** Keywords ***
+Perform Login
+    [Arguments]    ${username}    ${password}
+    Open Browser    ${URL}    ${BROWSER}
+    Maximize Browser Window
+    Input Text    ${USERNAME_XPATH}    ${username}
+    Input Text    ${PASSWORD_XPATH}    ${password}
+    Click Element    ${LOGIN_BUTTON_XPATH}
+
+Add Item To Cart
+    [Arguments]    ${add_button_xpath}    ${remove_button_xpath}
+    Click Element    ${add_button_xpath}
+    Page Should Contain Element    ${remove_button_xpath}
+
+Click And Verify
+    [Arguments]    ${button_xpath}    ${title_xpath}    ${expected_title}
+    Click Element    ${button_xpath}
+    Page Should Contain Element    ${title_xpath}
+    Element Should Contain    ${title_xpath}    ${expected_title}
+
+*** Test Cases ***
+Add Items To Cart
+    Perform Login    ${VALID_USERNAME}    ${VALID_PASSWORD}
+    Add Item To Cart    ${ADD_BACKPACK_BUTTON_XPATH}    ${REMOVE_BACKPACK_BUTTON_XPATH}
+    Add Item To Cart    ${ADD_JACKET_BUTTON_XPATH}    ${REMOVE_JACKET_BUTTON_XPATH}
+    Click And Verify    ${SHOPPING_CART_LINK}    ${TITLE_ELEMENT_XPATH}    Your Cart
+    [Teardown]    Close Browser
+--------------- # ---------------
+
+- folytattsuk a checkout-al. Bővítsük ki a variables robot-ot a szükséges elemekkel
+--------------- resources/variables.robot bővítés az alábbi elemekkel ---------------
+${CHECKOUT_BUTTON_XPATH}    //button[@id='checkout']
+${FIRST_NAME_INPUT_XPATH}    //input[@id='first-name']
+${LAST_NAME_INPUT_XPATH}    //input[@id='last-name']
+${POSTAL_CODE_INPUT_XPATH}    //input[@id='postal-code']
+${CONTINUE_BUTTON_XPATH}    //input[@id='continue']
+${FINISH_BUTTON_XPATH}    //button[@id='finish']
+--------------- # ---------------
+
+- írjuk meg a form kitöltő kulcsszót:
+--------------- add_items_to_cart_and_checkout.robot bővítés az alábbi kulcsszóval ---------------
+Fill Checkout Form
+    [Arguments]    ${first_name}    ${last_name}    ${postal_code}
+    Input Text    ${FIRST_NAME_INPUT_XPATH}    ${first_name}
+    Input Text    ${LAST_NAME_INPUT_XPATH}    ${last_name}
+    Input Text    ${POSTAL_CODE_INPUT_XPATH}    ${postal_code}
+
+--------------- # ---------------
+
+- egészítsük ki az Add Items To Cart-ot -> Add Items To Cart And Checkout-ra és írjuk meg a vásárlási folyamat végéig
+
+--------------- Add Items To Cart -> Add Items To Cart And Checkout ---------------
+*** Test Cases ***
+Add Items To Cart And Checkout
+    Perform Login    ${VALID_USERNAME}    ${VALID_PASSWORD}
+    Add Item To Cart    ${ADD_BACKPACK_BUTTON_XPATH}    ${REMOVE_BACKPACK_BUTTON_XPATH}
+    Add Item To Cart    ${ADD_JACKET_BUTTON_XPATH}    ${REMOVE_JACKET_BUTTON_XPATH}
+    Click And Verify    ${SHOPPING_CART_LINK}    ${TITLE_ELEMENT_XPATH}    Your Cart
+    
+    Click And Verify    ${CHECKOUT_BUTTON_XPATH}    ${TITLE_ELEMENT_XPATH}    Checkout: Your Information
+    Fill Checkout Form    Tompika    Asztalos    7633
+    Click And Verify    ${CONTINUE_BUTTON_XPATH}    ${TITLE_ELEMENT_XPATH}    Checkout: Overview
+    Click And Verify    ${FINISH_BUTTON_XPATH}    ${TITLE_ELEMENT_XPATH}    Checkout: Complete!
+    Page Should Contain    Thank you for your order!
+    [Teardown]    Close Browser
+--------------- # ---------------
+
+- Valahogy így kellene kinéznie a végeredménynek:
+--------------- add_items_to_cart_and_checkout.robot ---------------
+*** Settings ***
+Documentation    Test for adding items to the shopping cart and checkout on SwagLabs
+Library    SeleniumLibrary
+Resource    variables.robot
+
+*** Keywords ***
+Perform Login
+    [Arguments]    ${username}    ${password}
+    Open Browser    ${URL}    ${BROWSER}
+    Maximize Browser Window
+    Input Text    ${USERNAME_XPATH}    ${username}
+    Input Text    ${PASSWORD_XPATH}    ${password}
+    Click Element    ${LOGIN_BUTTON_XPATH}
+
+Add Item To Cart
+    [Arguments]    ${add_button_xpath}    ${remove_button_xpath}
+    Click Element    ${add_button_xpath}
+    Page Should Contain Element    ${remove_button_xpath}
+
+Click And Verify
+    [Arguments]    ${button_xpath}    ${title_xpath}    ${expected_title}
+    Click Element    ${button_xpath}
+    Page Should Contain Element    ${title_xpath}
+    Element Should Contain    ${title_xpath}    ${expected_title}
+
+Fill Checkout Form
+    [Arguments]    ${first_name}    ${last_name}    ${postal_code}
+    Input Text    ${FIRST_NAME_INPUT_XPATH}    ${first_name}
+    Input Text    ${LAST_NAME_INPUT_XPATH}    ${last_name}
+    Input Text    ${POSTAL_CODE_INPUT_XPATH}    ${postal_code}
+
+*** Test Cases ***
+Add Items To Cart And Checkout
+    Perform Login    ${VALID_USERNAME}    ${VALID_PASSWORD}
+    Add Item To Cart    ${ADD_BACKPACK_BUTTON_XPATH}    ${REMOVE_BACKPACK_BUTTON_XPATH}
+    Add Item To Cart    ${ADD_JACKET_BUTTON_XPATH}    ${REMOVE_JACKET_BUTTON_XPATH}
+    Click And Verify    ${SHOPPING_CART_LINK}    ${TITLE_ELEMENT_XPATH}    Your Cart
+    Click And Verify    ${CHECKOUT_BUTTON_XPATH}    ${TITLE_ELEMENT_XPATH}    Checkout: Your Information
+    Fill Checkout Form    Tompika    Asztalos    7633
+    Click And Verify    ${CONTINUE_BUTTON_XPATH}    ${TITLE_ELEMENT_XPATH}    Checkout: Overview
+    Click And Verify    ${FINISH_BUTTON_XPATH}    ${TITLE_ELEMENT_XPATH}    Checkout: Complete!
+    Page Should Contain    Thank you for your order!
+    [Teardown]    Close Browser
+--------------- # ---------------
+
+10. Git add
+    Git Bashban:
+        git status  (lássuk mi változott)
+        git add .   (változások hozzáadása)
+        git commit -m "finish add items to cart and checkout test" (commit)
+        git checkout master (ág váltás)
+        git merge dev   (merge)
+
+11. Egy kis minta egy szépen struktúrált projektre:
+https://github.com/kissbalazs92
